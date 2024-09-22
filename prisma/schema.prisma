@@ -20,17 +20,26 @@ enum TokenType {
   VERIFY_EMAIL_TOKEN
 }
 
+enum VoteType {
+  UPVOTE
+  DOWNVOTE
+}
+
 model Users {
-  id              Int      @id @default(autoincrement())
-  email           String   @unique
+  id              Int             @id @default(autoincrement())
+  email           String          @unique
   name            String
   password        String
   todos           Todos[]
   token           Tokens[]
-  isEmailVerified Boolean  @default(false)
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-  uuid            String   @unique @default(uuid())
+  isEmailVerified Boolean         @default(false)
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  uuid            String          @unique @default(uuid())
+  questions       Questions[]
+  answers         Answers[]
+  questionVotes   QuestionVotes[]
+  answerVotes     AnswerVotes[]
 }
 
 model Tokens {
@@ -55,4 +64,62 @@ model Todos {
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
   deletedAt       DateTime?
+}
+
+model TechTags {
+  id        Int       @id @default(autoincrement())
+  name      String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+}
+
+model Questions {
+  id              Int             @id @default(autoincrement())
+  uuid            String          @unique @default(uuid())
+  title           String
+  description     String
+  createdByUser   Users           @relation(fields: [createdByUserId], references: [id])
+  createdByUserId Int
+  answers         Answers[]
+  questionVotes   QuestionVotes[]
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  deletedAt       DateTime?
+}
+
+model QuestionVotes {
+  question   Questions @relation(fields: [questionId], references: [id])
+  questionId Int
+  user       Users     @relation(fields: [userId], references: [id])
+  userId     Int
+  createdAt  DateTime  @default(now())
+  voteType   VoteType
+
+  @@id([questionId, userId])
+}
+
+model Answers {
+  id              Int           @id @default(autoincrement())
+  uuid            String        @unique @default(uuid())
+  content         String
+  question        Questions     @relation(fields: [questionId], references: [id])
+  questionId      Int
+  createdByUser   Users         @relation(fields: [createdByUserId], references: [id])
+  createdByUserId Int
+  answerVotes     AnswerVotes[]
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  deletedAt       DateTime?
+}
+
+model AnswerVotes {
+  answers   Answers  @relation(fields: [answerId], references: [id])
+  answerId  Int
+  user      Users    @relation(fields: [userId], references: [id])
+  userId    Int
+  createdAt DateTime @default(now())
+  voteType  VoteType
+
+  @@id([answerId, userId])
 }
