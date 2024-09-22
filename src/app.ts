@@ -24,6 +24,7 @@ import todoRouter from "./routes/app/todo/todo.routes";
 
 // qna routes
 import questionRouter from "@/routes/app/qna/question.routes";
+import answerRouter from "@/routes/app/qna/answer.routes";
 
 //routes declaration
 app.use("/api/v1/health-check", healthCheckRouter);
@@ -32,6 +33,7 @@ app.use("/api/v1/todos", todoRouter);
 
 // qna routes
 app.use("/api/v1/qna/questions", questionRouter);
+app.use("/api/v1/qna/answers", answerRouter);
 
 // common error handling middleware
 app.use(errorHandler);
