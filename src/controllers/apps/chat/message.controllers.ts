@@ -111,8 +111,6 @@ export const updateOneMessage = asyncHandler(async (req, res) => {
     throw new ApiError(404, "Message does not exist");
   }
 
-  console.log(selectedMessage.createdByUserId, loggedInUser.id);
-
   if (selectedMessage.createdByUserId !== loggedInUser.id) {
     throw new ApiError(403, "You are not allowed to update this message");
   }
