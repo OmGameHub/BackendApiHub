@@ -299,3 +299,14 @@ const generateTemporaryToken = () => {
 
   return { unHashedToken, hashedToken, tokenExpiry };
 };
+
+export const userTransform = (user: any) => {
+  return {
+    _id: user.uuid,
+    name: user.name,
+    email: user.email,
+    role: user.role,
+    isEmailVerified: user.isEmailVerified,
+    createdAt: user.createdAt,
+  };
+};

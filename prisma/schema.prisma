@@ -20,26 +20,35 @@ enum TokenType {
   VERIFY_EMAIL_TOKEN
 }
 
+enum UserRolesEnum {
+  ADMIN
+  USER
+}
+
 enum VoteType {
   UPVOTE
   DOWNVOTE
 }
 
 model Users {
-  id              Int             @id @default(autoincrement())
-  email           String          @unique
-  name            String
-  password        String
-  todos           Todos[]
-  token           Tokens[]
-  isEmailVerified Boolean         @default(false)
-  createdAt       DateTime        @default(now())
-  updatedAt       DateTime        @updatedAt
-  uuid            String          @unique @default(uuid())
-  questions       Questions[]
-  answers         Answers[]
-  questionVotes   QuestionVotes[]
-  answerVotes     AnswerVotes[]
+  id                 Int                  @id @default(autoincrement())
+  uuid               String               @unique @default(uuid())
+  email              String               @unique
+  name               String
+  password           String
+  isEmailVerified    Boolean              @default(false)
+  role               UserRolesEnum        @default(USER)
+  todos              Todos[]
+  token              Tokens[]
+  questions          Questions[]
+  answers            Answers[]
+  questionVotes      QuestionVotes[]
+  answerVotes        AnswerVotes[]
+  chatChannels       ChatChannels[]
+  chatChannelMembers ChatChannelMembers[]
+  chatMessages       ChatMessages[]
+  createdAt          DateTime             @default(now())
+  updatedAt          DateTime             @updatedAt
 }
 
 model Tokens {
@@ -122,4 +131,43 @@ model AnswerVotes {
   voteType  VoteType
 
   @@id([answerId, userId])
+}
+
+model ChatChannels {
+  id              Int                  @id @default(autoincrement())
+  uuid            String               @unique @default(uuid())
+  name            String?
+  isGroupChat     Boolean              @default(false)
+  members         ChatChannelMembers[]
+  createdByUser   Users                @relation(fields: [createdByUserId], references: [id])
+  createdByUserId Int
+  chatMessages    ChatMessages[]
+  createdAt       DateTime             @default(now())
+  updatedAt       DateTime             @updatedAt
+  deletedAt       DateTime?
+}
+
+model ChatChannelMembers {
+  user          Users         @relation(fields: [userId], references: [id])
+  userId        Int
+  chatChannel   ChatChannels  @relation(fields: [chatChannelId], references: [id])
+  chatChannelId Int
+  role          UserRolesEnum @default(USER)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  @@id([userId, chatChannelId])
+}
+
+model ChatMessages {
+  id              Int          @id @default(autoincrement())
+  uuid            String       @unique @default(uuid())
+  content         String
+  chatChannel     ChatChannels @relation(fields: [chatChannelId], references: [id])
+  chatChannelId   Int
+  createdByUser   Users        @relation(fields: [createdByUserId], references: [id])
+  createdByUserId Int
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+  deletedAt       DateTime?
 }
