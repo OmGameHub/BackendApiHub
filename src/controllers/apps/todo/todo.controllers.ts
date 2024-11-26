@@ -37,10 +37,10 @@ export const getAllTodos = asyncHandler(async (req, res) => {
   if (q) {
     query.OR = [
       {
-        title: { contains: q },
+        title: { contains: q, mode: "insensitive" },
       },
       {
-        description: { contains: q },
+        description: { contains: q, mode: "insensitive" },
       },
     ];
   }
