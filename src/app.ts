@@ -1,6 +1,18 @@
 import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
+import path from "path";
+import fs from "fs";
+import YAML from "yaml";
+import swaggerUi from "swagger-ui-express";
+
+const file = fs.readFileSync(path.resolve(__dirname, "./swagger.yaml"), "utf8");
+const swaggerDocument = YAML.parse(
+  file?.replace(
+    "- url: ${{server}}",
+    `- url: ${process.env.BACKEND_API_HOST_URL}/api/v1`
+  )
+);
 
 const app = express();
 
@@ -42,6 +54,19 @@ app.use("/api/v1/qna/answers", answerRouter);
 // chat app routes
 app.use("/api/v1/chat-app/chats", chatRouter);
 app.use("/api/v1/chat-app/messages", messageRouter);
+
+// * API DOCS
+// ? Keeping swagger code at the end so that we can load swagger on "/" route
+app.use(
+  "/",
+  swaggerUi.serve,
+  swaggerUi.setup(swaggerDocument, {
+    swaggerOptions: {
+      docExpansion: "none", // keep all the sections collapsed by default
+    },
+    customSiteTitle: "Backend API Hub docs",
+  })
+);
 
 // common error handling middleware
 app.use(errorHandler);

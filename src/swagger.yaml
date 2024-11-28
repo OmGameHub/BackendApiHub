@@ -1,0 +1,3045 @@
+openapi: 3.0.3
+info:
+  title: Backend API Hub Documentation
+  description: >-
+    Backend API Hub is a collection of APIs designed to power Todo List, QnA, and Chat applications.  
+    
+    this project provides modular, scalable, and production-ready APIs built with modern technologies.
+
+    #### Features:
+      - **Todo List API**: Manage tasks with functionalities like create, update, delete, and retrieve.
+      - **QnA API**: Handle user-generated questions and answers with voting and moderation capabilities.
+      - **Chat App API**: Enable real-time messaging between users or groups.
+
+    #### Tech Stack:
+      - **Node.js:** JavaScript runtime environment for server-side development.
+      - **Express:** Web framework for building APIs and web applications on top of Node.js.
+      - **TypeScript:** Statically typed superset of JavaScript that adds type safety and improves code maintainability.
+      - **Prisma:** OR Mapper (Object-Relational Mapper) that simplifies interactions between TypeScript and PostgreSQL.
+      - **PostgreSQL:** Object-relational database management system for persistent data storage.
+
+    This project emphasizes clean architecture, robust performance and developer-friendly documentation.
+  version: 1.0.0
+  contact: {}
+servers:
+  - url: http://localhost:8080/api/v1
+paths:
+  /users/register:
+    post:
+      tags:
+        - 🔐 Authentication
+      summary: Register user
+      description: >-
+        The API endpoint allows users to register or sign up to create their accounts.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: John Doe
+                email:
+                  type: string
+                  format: email
+                  example: johndoe@example.com
+                password:
+                  type: string
+                  format: password
+                  example: pass@1234
+                  
+      responses:
+        '201':
+          description: User registered successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: integer
+                    example: 200
+                  data:
+                    type: object
+                    properties:
+                      user:
+                        type: object
+                        properties:
+                          id:
+                            type: integer
+                            example: 1
+                          email:
+                            type: string
+                            example: johndoe@example.com
+                          name:
+                            type: string
+                            example: John Doe
+                  message:
+                    type: string
+                    example: User registered successfully and verification email has been sent to your email.
+                  success:
+                    type: boolean
+                    example: true
+  /users/login:
+    post:
+      tags:
+        - 🔐 Authentication
+      summary: Login user
+      description: >-
+        The API endpoint allows users to log in to their accounts.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: johndoe@example.com
+                password:
+                  type: string
+                  format: password
+                  example: pass@1234
+      responses:
+        '200':
+          description: User logged in successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: integer
+                    example: 200
+                  data:
+                    type: object
+                    properties:
+                      user:
+                        type: object
+                        properties:
+                          uuid:
+                            type: string
+                            example: 5f8a3b2f-3b8d-4b7b-8b3b-3b8d4b7b8b3b
+                          email:
+                            type: string
+                            example: johndoe@example.com
+                          name:
+                            type: string
+                            example: John Doe
+                          isEmailVerified:
+                            type: boolean
+                            example: false
+                          role:
+                            type: string
+                            example: USER
+                          createdAt:
+                            type: string
+                            format: date-time
+                            example: 2024-11-02T14:24:59.782Z
+                          updatedAt:
+                            type: string
+                            format: date-time
+                            example: 2024-11-02T14:24:59.782Z
+                          accessToken:
+                            type: string
+                            example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOjEwLCJlbWFpbCI6Imlyb25tYW5AZXhhbXBsZS5jb20iLCJpYXQiOjE3MzA1NTc2NjIsImV4cCI6MTczMDY0NDA2Mn0._eK0UBsKmFURggYPTGdZEui0Qyv9wARHx_tmH7PXGk4
+                          refreshToken:
+                            type: string
+                            example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOjEwLCJpYXQiOjE3MzA1NTc2NjIsImV4cCI6MTczMTQyMTY2Mn0.2yaSINKfWMJDnxw3rccVlKj4kya4YeuIQBRsyPN7qF4
+                  message:
+                    type: string
+                    example: User logged in successfully
+                  success:
+                    type: boolean
+                    example: true
+  /users/verify-email/{verificationToken}:
+    get:
+      tags:
+        - 🔐 Authentication
+      summary: Verify email
+      description: >-
+        The API endpoint allows users to verify their email addresses.
+      operationId: verifyEmail
+      responses:
+        '200':
+          description: Email verified successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: Email verified successfully
+                  success:
+                    type: boolean
+                    example: true
+  /users/current-user:
+    get:
+      tags:
+        - 🔐 Authentication
+      summary: Get current user
+      description: >-
+        The API endpoint allows users to fetch their own user details.
+      responses:
+        '200':
+          description: Current user fetched successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: integer
+                    example: 200
+                  data:
+                    type: object
+                    properties:
+                      uuid:
+                        type: string
+                        example: 5f8a3b2f-3b8d-4b7b-8b3b-3b8d4b7b8b3b
+                      email:
+                        type: string
+                        example: johndoe@example.com
+                      name:
+                        type: string
+                        example: John Doe
+                      isEmailVerified:
+                        type: boolean
+                        example: true
+                      role:
+                        type: string
+                        example: USER
+                      createdAt:
+                        type: string
+                        format: date-time
+                        example: 2024-11-25T19:31:34.519Z
+                      updatedAt:
+                        type: string
+                        format: date-time
+                        example: 2024-11-25T19:31:34.519Z
+                  message:
+                    type: string
+                    example: Current user fetched successfully
+                  success:
+                    type: boolean
+                    example: true
+
+  /todos:
+    post:
+      tags:
+        - 📝 Todo list
+      summary: Add todo
+      description: >-
+        The API endpoint allows you to add a new todo.
+      operationId: addTodo
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  example: Learn python
+                description:
+                  type: string
+                  example: Some description about todo
+                status:
+                  type: string
+                  example: pending
+                completed:
+                  type: boolean
+                  example: false
+      responses:
+        '201':
+          description: Add todo
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: number
+                        example: 1
+                      title:
+                        type: string
+                        example: Learn python
+                      description:
+                        type: string
+                        example: Some description about todo
+                      status:
+                        type: string
+                        example: pending
+                      completed:
+                        type: boolean
+                        example: false
+                      createdAt:
+                        type: string
+                        example: 2023-06-17T19:18:34.462Z
+                      updatedAt:
+                        type: string
+                        example: 2023-06-17T19:18:34.462Z
+                  message:
+                    type: string
+                    example: Todo added successfully
+                  statusCode:
+                    type: number
+                    example: 201
+                  success:
+                    type: boolean
+                    example: true
+              examples:
+                Add todo:
+                  value:
+                    data:
+                      id: 1
+                      title: Learn python
+                      description: Some description about todo
+                      status: pending
+                      completed: false
+                      createdAt: '2023-06-17T19:18:34.462Z'
+                      updatedAt: '2023-06-17T19:18:34.462Z'
+                    message: Todo added successfully
+                    statusCode: 201
+                    success: true
+    get:
+      tags:
+        - 📝 Todo list
+      summary: Get all todos
+      description: >-
+        The API endpoint allows you to retrieve all the added todos.
+
+        When accessing this endpoint, you will receive a response containing a
+        list of all the todos that have been added.
+      operationId: getAllTodos
+      parameters:
+        - name: q
+          in: query
+          schema:
+            type: string
+        - name: status
+          in: query
+          schema:
+            type: string
+        - name: complete
+          in: query
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: Get all todos
+          headers:
+            Access-Control-Allow-Credentials:
+              schema:
+                type: string
+                example: 'true'
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                example: '*'
+            Connection:
+              schema:
+                type: string
+                example: keep-alive
+            Content-Length:
+              schema:
+                type: string
+                example: '815'
+            Date:
+              schema:
+                type: string
+                example: Sat, 17 Jun 2023 19:19:40 GMT
+            ETag:
+              schema:
+                type: string
+                example: W/"32f-LlDKeMfFfXV5TgAkP4oFcqRrOrI"
+            Keep-Alive:
+              schema:
+                type: string
+                example: timeout=5
+            X-Powered-By:
+              schema:
+                type: string
+                example: Express
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: number
+                          example: 0
+                        title:
+                          type: string
+                          example: Learn python
+                        description:
+                          type: string
+                          example: Some description about todo
+                        status:
+                          type: string
+                          example: pending
+                        completed:
+                          type: boolean
+                          example: false
+                        createdAt:
+                          type: string
+                          example: 2023-06-17T19:18:34.462Z
+                        updatedAt:
+                          type: string
+                          example: 2023-06-17T19:18:34.462Z
+                    example:
+                      - id: 0
+                        title: Learn python
+                        description: Some description about todo
+                        status: pending
+                        completed: false
+                        createdAt: '2023-06-17T19:18:34.462Z'
+                        updatedAt: '2023-06-17T19:18:34.462Z'
+                  message:
+                    type: string
+                    example: Todos fetched successfully
+                  statusCode:
+                    type: number
+                    example: 200
+                  success:
+                    type: boolean
+                    example: true
+              examples:
+                Get all todos:
+                  value:
+                    data:
+                      - id: 0
+                        title: Learn python
+                        description: Some description about todo>
+                        status: pending
+                        completed: false
+                        createdAt: '2023-06-17T19:18:34.462Z'
+                        updatedAt: '2023-06-17T19:18:34.462Z'
+                      - id: 1
+                        title: Learn JavaScript
+                        description: Some description about todo
+                        status: completed
+                        completed: true
+                        createdAt: '2023-06-17T19:18:34.462Z'
+                        updatedAt: '2023-06-17T19:18:34.462Z'
+                    message: Todos fetched successfully
+                    statusCode: 200
+                    success: true 
+  /todos/{todoId}:
+    get:
+      tags:
+        - 📝 Todo list
+      summary: Get todo by ID
+      description: >-
+        The API endpoint allows you to retrieve a todo by its ID.
+      operationId: getTodoById
+      parameters:
+        - name: todoId
+          in: path
+          required: true
+          schema:
+            type: string
+            example: 1
+      responses:
+        '200':
+          description: Get todo by ID
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: number
+                        example: 1
+                      title:
+                        type: string
+                        example: Learn python
+                      description:
+                        type: string
+                        example: Some description about todo
+                      status:
+                        type: string
+                        example: pending
+                      completed:
+                        type: boolean
+                        example: false
+                      createdAt:
+                        type: string
+                        example: 2023-06-17T19:18:34.462Z
+                      updatedAt:
+                        type: string
+                        example: 2023-06-17T19:18:34.462Z
+                  message:
+                    type: string
+                    example: Todo fetched successfully
+                  statusCode:
+                    type: number
+                    example: 200
+                  success:
+                    type: boolean
+                    example: true
+              examples:
+                Get todo by ID:
+                  value:
+                    data:
+                      id: 1
+                      title: Learn python
+                      description: Some description about todo
+                      status: pending
+                      completed: false
+                      createdAt: '2023-06-17T19:18:34.462Z'
+                      updatedAt: '2023-06-17T19:18:34.462Z'
+                    message: Todo fetched successfully
+                    statusCode: 200
+                    success: true
+    put:
+      tags:
+        - 📝 Todo list
+      summary: Update todo by ID
+      description: >-
+        The API endpoint allows you to update a todo by its ID.
+      operationId: updateTodoById
+      parameters:
+        - name: todoId
+          in: path
+          required: true
+          schema:
+            type: string
+            example: 1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  example: Learn python
+                description:
+                  type: string
+                  example: Learn python programming language
+                status:
+                  type: string
+                  example: in_progress
+                completed:
+                  type: boolean
+                  example: false
+      responses:
+        '200':
+          description: Update todo by ID
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: number
+                        example: 1
+                      title:
+                        type: string
+                        example: Learn python
+                      description:
+                        type: string
+                        example: Learn python programming language
+                      status:
+                        type: string
+                        example: in_progress
+                      completed:
+                        type: boolean
+                        example: false
+                      createdAt:
+                        type: string
+                        example: 2023-06-17T19:18:34.462Z
+                      updatedAt:
+                        type: string
+                        example: 2023-06-17T19:18:34.462Z
+                      deletedAt:
+                        type: string
+                        example: null
+                  message:
+                    type: string
+                    example: Todo updated successfully
+                  statusCode:
+                    type: number
+                    example: 200
+                  success:
+                    type: boolean
+                    example: true
+              examples:
+                Update todo by ID:
+                  value:
+                    data:
+                      id: 1
+                      title: Learn python
+                      description: Learn python programming language
+                      status: in_progress
+                      completed: false
+                      createdAt: '2023-06-17T19:18:34.462Z'
+                      updatedAt: '2023-06-17T19:18:34.462Z'
+                      deletedAt: null
+                    message: Todo updated successfully
+                    statusCode: 200
+                    success: true
+    delete:
+      tags:
+        - 📝 Todo list
+      summary: Delete todo by ID
+      description: >-
+        The API endpoint allows you to delete a todo by its ID.
+      operationId: deleteTodoById
+      parameters:
+        - name: todoId
+          in: path
+          required: true
+          schema:
+            type: string
+            example: 1
+      responses:
+        '200':
+          description: Delete todo by ID
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: number
+                        example: 1
+                      title:
+                        type: string
+                        example: Learn python
+                      description:
+                        type: string
+                        example: Learn python programming language
+                      status:
+                        type: string
+                        example: in_progress
+                      completed:
+                        type: boolean
+                        example: false
+                      createdAt:
+                        type: string
+                        example: 2023-06-17T19:18:34.462Z
+                      updatedAt:
+                        type: string
+                        example: 2023-06-17T19:18:34.462Z
+                      deletedAt:
+                        type: string
+                        example: 2023-06-17T19:18:34.462Z
+                  message:
+                    type: string
+                    example: Todo deleted successfully
+                  statusCode:
+                    type: number
+                    example: 200
+                  success:
+                    type: boolean
+                    example: true
+              examples:
+                Delete todo by ID:
+                  value:
+                    data:
+                      id: 1
+                      title: Learn python
+                      description: Learn python programming language
+                      status: in_progress
+                      completed: false
+                      createdAt: '2023-06-17T19:18:34.462Z'
+                      updatedAt: '2023-06-17T19:18:34.462Z'
+                      deletedAt: '2023-06-17T19:18:34.462Z'
+                    message: Todo deleted successfully
+                    statusCode: 200
+                    success: true
+  
+  /qna/questions/create:
+    post:
+      tags:
+        - ❓ QnA App
+      summary: Create question
+      description: >-
+        The API endpoint allows you to create a new question.
+      operationId: createQuestion
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  example: How to learn python?
+                description:
+                  type: string
+                  example: Some description about question
+      responses:
+        '201':
+          description: Create question
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      _id:
+                        type: string
+                        example: 1163df24-d3ba-4f73-873d-01350c3ef69a
+                      title:
+                        type: string
+                        example: How to learn python?
+                      description:
+                        type: string
+                        example: Some description about question
+                      createdByUser: 
+                        type: object
+                        properties:
+                          _id:
+                            type: number
+                            example: ffcdd7b5-ff95-49cb-863c-0918b98afdce
+                          name:
+                            type: string
+                            example: John Doe
+                          email:
+                            type: string
+                            example: johndoe@example.com
+                      isUpvote:
+                        type: boolean
+                        example: false
+                      isDownvote:
+                        type: boolean
+                        example: false
+                      upvoteCount:
+                        type: number
+                        example: 0
+                      downvoteCount:
+                        type: number
+                        example: 0
+                      createdAt:
+                        type: string
+                        example: 2023-06-17T19:18:34.462Z
+                      deletedAt:
+                        type: string
+                        example: null
+                  message:
+                    type: string
+                    example: Question created successfully
+                  statusCode:
+                    type: number
+                    example: 201
+                  success:
+                    type: boolean
+                    example: true
+              examples:
+                Create question:
+                  value:
+                    data:
+                      _id: 1163df24-d3ba-4f73-873d-01350c3ef69a
+                      title: How to learn python?
+                      description: Some description about question
+                      createdByUser:
+                        _id: ffcdd7b5-ff95-49cb-863c-0918b98afdce
+                        name: John Doe
+                        email: johndoe@example.com
+                      isUpvote: false
+                      isDownvote: false
+                      upvoteCount: 0
+                      downvoteCount: 0
+                      createdAt: '2023-06-17T19:18:34.462Z'
+                      deletedAt: null
+                    message: Question created successfully
+                    statusCode: 201
+                    success: true
+  /qna/questions/get/my:
+    get:
+      tags:
+        - ❓ QnA App
+      summary: Get all logged in user questions
+      description: >-
+        The API endpoint allows you to retrieve all the added questions by logged in user.
+
+        When accessing this endpoint, you will receive a response containing a
+        list of all the questions that have been added by logged in user.
+      operationId: getAllLoggedInUserQuestions
+      parameters:
+        - name: q
+          in: query
+          schema:
+            type: string
+        - name: page
+          in: query
+          schema:
+            type: number
+            example: 1
+        - name: limit
+          in: query
+          schema:
+            type: number
+            example: 10
+      responses:
+        '200':
+          description: Get all logged in user questions
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      list:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            _id:
+                              type: string
+                              example: 1163df24-d3ba-4f73-873d-01350c3ef69a
+                            title:
+                              type: string
+                              example: How to learn python?
+                            description:
+                              type: string
+                              example: Some description about question
+                            createdByUser: 
+                              type: object
+                              properties:
+                                _id:
+                                  type: number
+                                  example: ffcdd7b5-ff95-49cb-863c-0918b98afdce
+                                name:
+                                  type: string
+                                  example: John Doe
+                                email:
+                                  type: string
+                                  example: johndoe@example.com
+                            isUpvote:
+                              type: boolean
+                              example: false
+                            isDownvote:
+                              type: boolean
+                              example: false
+                            upvoteCount:
+                              type: number
+                              example: 0
+                            downvoteCount:
+                              type: number
+                              example: 0
+                            createdAt:
+                              type: string
+                              example: 2023-06-17T19:18:34.462Z
+                            deletedAt:
+                              type: string
+                              example: null
+                      meta:
+                        type: object
+                        properties:
+                          page:
+                            type: number
+                            example: 1
+                          limit:
+                            type: number
+                            example: 10
+                          total:
+                            type: number
+                            example: 1
+                          hasPrevPage:
+                            type: boolean
+                            example: false
+                          prevPage:
+                              type: number
+                              example: null
+                          hasNextPage:
+                            type: boolean
+                            example: false
+                          nextPage:
+                            type: number
+                            example: null
+                  message: 
+                    type: string
+                    example: Questions fetched successfully
+                  statusCode:
+                    type: number
+                    example: 200
+                  success:
+                    type: boolean
+                    example: true
+              examples:
+                Get all logged in user questions:
+                  value:
+                    data:
+                      list:
+                        - _id: 1163df24-d3ba-4f73-873d-01350c3ef69a
+                          title: How to learn python?
+                          description: Some description about question
+                          createdByUser:
+                            _id: ffcdd7b5-ff95-49cb-863c-0918b98afdce
+                            name: John Doe
+                            email: johndoe@example.com
+                          isUpvote: false
+                          isDownvote: false
+                          upvoteCount: 0
+                          downvoteCount: 0
+                          createdAt: '2023-06-17T19:18:34.462Z'
+                          deletedAt: null
+                        - _id: 1163df24-d3ba-4f73-873d-01350c3ef69a
+                          title: How to learn JavaScript?
+                          description: Some description about question
+                          createdByUser:
+                            _id: ffcdd7b5-ff95-49cb-863c-0918b98afdce
+                            name: John Doe
+                            email: johndoe@example.com
+                          isUpvote: false
+                          isDownvote: false
+                          upvoteCount: 0
+                          downvoteCount: 0
+                          createdAt: '2023-06-17T19:18:34.462Z'
+                          deletedAt: null
+                      meta:
+                        page: 1
+                        limit: 10
+                        total: 2
+                        hasPrevPage: false
+                        prevPage: null
+                        hasNextPage: false
+                        nextPage: null
+  /qna/questions:
+    get:
+      tags:
+        - ❓ QnA App
+      summary: Get all questions
+      description: >-
+        The API endpoint allows you to retrieve all the added questions.
+
+        When accessing this endpoint, you will receive a response containing a
+        list of all the questions that have been added.
+      operationId: getAllQuestions
+      parameters:
+        - name: q
+          in: query
+          schema:
+            type: string
+        - name: page
+          in: query
+          schema:
+            type: number
+            example: 1
+        - name: limit
+          in: query
+          schema:
+            type: number
+            example: 10
+      responses:
+        '200':
+          description: Get all questions
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      list:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            _id:
+                              type: string
+                              example: 1163df24-d3ba-4f73-873d-01350c3ef69a
+                            title:
+                              type: string
+                              example: How to learn python?
+                            description:
+                              type: string
+                              example: Some description about question
+                            createdByUser: 
+                              type: object
+                              properties:
+                                _id:
+                                  type: number
+                                  example: ffcdd7b5-ff95-49cb-863c-0918b98afdce
+                                name:
+                                  type: string
+                                  example: John Doe
+                                email:
+                                  type: string
+                                  example: johndoe@example.com
+                            isUpvote:
+                              type: boolean
+                              example: false
+                            isDownvote:
+                              type: boolean
+                              example: false
+                            upvoteCount:
+                              type: number
+                              example: 0
+                            downvoteCount:
+                              type: number
+                              example: 0
+                            createdAt:
+                              type: string
+                              example: 2023-06-17T19:18:34.462Z
+                            deletedAt:
+                              type: string
+                              example: null
+                      meta:
+                        type: object
+                        properties:
+                          page:
+                            type: number
+                            example: 1
+                          limit:
+                            type: number
+                            example: 10
+                          total:
+                            type: number
+                            example: 1
+                          hasPrevPage:
+                            type: boolean
+                            example: false
+                          prevPage:
+                              type: number
+                              example: null
+                          hasNextPage:
+                            type: boolean
+                            example: false
+                          nextPage:
+                            type: number
+                            example: null
+                  message: 
+                    type: string
+                    example: Questions fetched successfully
+                  statusCode:
+                    type: number
+                    example: 200
+                  success:
+                    type: boolean
+                    example: true
+              examples:
+                Get all questions:
+                  value:
+                    data:
+                      list:
+                        - _id: 1163df24-d3ba-4f73-873d-01350c3ef69a
+                          title: How to learn python?
+                          description: Some description about question
+                          createdByUser:
+                            _id: ffcdd7b5-ff95-49cb-863c-0918b98afdce
+                            name: John Doe
+                            email: johndoe@example.com
+                          isUpvote: false
+                          isDownvote: false
+                          upvoteCount: 0
+                          downvoteCount: 0
+                          createdAt: '2023-06-17T19:18:34.462Z'
+                          deletedAt: null
+                        - _id: 1163df24-d3ba-4f73-873d-01350c3ef69a
+                          title: How to learn JavaScript?
+                          description: Some description about question
+                          createdByUser:
+                            _id: ffcdd7b5-ff95-49cb-863c-0918b98afdce
+                            name: John Doe
+                            email: johndoe@example.com
+                          isUpvote: false
+                          isDownvote: false
+                          upvoteCount: 0
+                          downvoteCount: 0
+                          createdAt: '2023-06-17T19:18:34.462Z'
+                          deletedAt: null
+                      meta:
+                        page: 1
+                        limit: 10
+                        total: 2
+                        hasPrevPage: false
+                        prevPage: null
+                        hasNextPage: false
+                        nextPage: null
+  /qna/questions/{questionId}:
+    get:
+      tags:
+        - ❓ QnA App
+      summary: Get question by ID
+      description: >-
+        The API endpoint allows you to retrieve a question by its ID.
+      operationId: getQuestionById
+      parameters:
+        - name: questionId
+          in: path
+          required: true
+          schema:
+            type: string
+            example: 1163df24-d3ba-4f73-873d-01350c3ef69a
+      responses:
+        '200':
+          description: Get question by ID
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      _id:
+                        type: string
+                        example: 1163df24-d3ba-4f73-873d-01350c3ef69a
+                      title:
+                        type: string
+                        example: How to learn python?
+                      description:
+                        type: string
+                        example: Some description about question
+                      createdByUser: 
+                        type: object
+                        properties:
+                          _id:
+                            type: number
+                            example: ffcdd7b5-ff95-49cb-863c-0918b98afdce
+                          name:
+                            type: string
+                            example: John Doe
+                          email:
+                            type: string
+                            example: johndoe@example.com
+                      isUpvote: 
+                        type: boolean
+                        example: false
+                      isDownvote:
+                        type: boolean
+                        example: false
+                      upvoteCount:
+                        type: number
+                        example: 0
+                      downvoteCount:
+                        type: number
+                        example: 0
+                      createdAt:
+                        type: string
+                        example: 2023-06-17T19:18:34.462Z
+                      deletedAt:
+                        type: string
+                        example: null
+                  message:  
+                    type: string
+                    example: Question fetched successfully
+                  statusCode:
+                    type: number
+                    example: 200
+                  success:
+                    type: boolean
+                    example: true
+              examples:
+                Get question by ID:
+                  value:
+                    data:
+                      _id: 1163df24-d3ba-4f73-873d-01350c3ef69a
+                      title: How to learn python?
+                      description: Some description about question
+                      createdByUser:
+                        _id: ffcdd7b5-ff95-49cb-863c-0918b98afdce
+                        name: John Doe
+                        email: johndoe@example.com
+                      isUpvote: false
+                      isDownvote: false
+                      upvoteCount: 0
+                      downvoteCount: 0
+                      createdAt: '2023-06-17T19:18:34.462Z'
+                      deletedAt: null
+                    message: Question fetched successfully
+                    statusCode: 200
+                    success: true                    
+    put:
+      tags:
+        - ❓ QnA App
+      summary: Update question by ID
+      description: >-
+        The API endpoint allows you to update a question by its ID.
+      operationId: updateQuestionById
+      parameters:
+        - name: questionId
+          in: path
+          required: true
+          schema:
+            type: string
+            example: 1163df24-d3ba-4f73-873d-01350c3ef69a
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  example: How to learn python?
+                description:
+                  type: string
+                  example: Some description about question
+      responses:
+        '200':
+          description: Update question by ID
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      _id:
+                        type: string
+                        example: 1163df24-d3ba-4f73-873d-01350c3ef69a
+                      title:
+                        type: string
+                        example: How to learn python?
+                      description:
+                        type: string
+                        example: Some description about question
+                      createdByUser: 
+                        type: object
+                        properties:
+                          _id:
+                            type: number
+                            example: ffcdd7b5-ff95-49cb-863c-0918b98afdce
+                          name:
+                            type: string
+                            example: John Doe
+                          email:
+                            type: string
+                            example: johndoe@example.com
+                      isUpvote:
+                        type: boolean
+                        example: false
+                      isDownvote:
+                        type: boolean
+                        example: false
+                      upvoteCount: 
+                        type: number
+                        example: 0
+                      downvoteCount:
+                        type: number
+                        example: 0
+                      createdAt:
+                        type: string
+                        example: 2023-06-17T19:18:34.462Z
+                      deletedAt:
+                        type: string
+                        example: null
+                  message: 
+                    type: string
+                    example: Question updated successfully
+                  statusCode:
+                    type: number
+                    example: 200
+                  success:
+                    type: boolean
+                    example: true
+              examples:
+                Update question by ID:
+                  value:
+                    data:
+                      _id: 1163df24-d3ba-4f73-873d-01350c3ef69a
+                      title: How to learn python?
+                      description: Some description about question
+                      createdByUser:
+                        _id: ffcdd7b5-ff95-49cb-863c-0918b98afdce
+                        name: John Doe
+                        email: johndoe@example.com
+                      isUpvote: false
+                      isDownvote: false
+                      upvoteCount: 0
+                      downvoteCount: 0
+                      createdAt: '2023-06-17T19:18:34.462Z'
+                      deletedAt: null
+                    message: Question updated successfully
+                    statusCode: 200
+                    success: true
+    delete:
+      tags:
+        - ❓ QnA App
+      summary: Delete question by ID
+      description: >-
+        The API endpoint allows you to delete a question by its ID.
+      operationId: deleteQuestionById
+      parameters:
+        - name: questionId
+          in: path
+          required: true
+          schema:
+            type: string
+            example: 1163df24-d3ba-4f73-873d-01350c3ef69a
+      responses:
+        '200':
+          description: Delete question by ID
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Question deleted successfully
+                  statusCode:
+                    type: number
+                    example: 200
+                  success:
+                    type: boolean
+                    example: true
+              examples:
+                Delete question by ID:
+                  value:
+                    message: Question deleted successfully
+                    statusCode: 200
+                    success: true
+  /qna/questions/toggle-upvote/{questionId}:
+    patch:
+      tags:
+        - ❓ QnA App
+      summary: Toggle upvote question by ID
+      description: >-
+        The API endpoint allows you to toggle upvote on a question.
+      operationId: toggleUpvote
+      parameters:
+        - name: questionId
+          in: path
+          required: true
+          schema:
+            type: string
+            example: 1163df24-d3ba-4f73-873d-01350c3ef69a
+      responses:
+        '200':
+          description: Toggle upvote
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Upvote added successfully
+                  statusCode:
+                    type: number
+                    example: 200
+                  success:
+                    type: boolean
+                    example: true
+              examples:
+                Up vote add:
+                  value:
+                    message: Upvote added successfully
+                    statusCode: 200
+                    success: true
+                Up vote remove:
+                  value:
+                    message: Upvote removed successfully
+                    statusCode: 200
+                    success: true
+  /qna/questions/toggle-downvote/{questionId}:
+    patch:
+      tags:
+        - ❓ QnA App
+      summary: Toggle downvote question by ID
+      description: >-
+        The API endpoint allows you to toggle downvote on a question.
+      operationId: toggleDownvote
+      parameters:
+        - name: questionId
+          in: path
+          required: true
+          schema:
+            type: string
+            example: 1163df24-d3ba-4f73-873d-01350c3ef69a
+      responses:
+        '200':
+          description: Toggle downvote
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Downvote added successfully
+                  statusCode:
+                    type: number
+                    example: 200
+                  success:
+                    type: boolean
+                    example: true
+              examples:
+                Down vote add:
+                  value:
+                    message: Downvote added successfully
+                    statusCode: 200
+                    success: true
+                Down vote remove:
+                  value:
+                    message: Downvote removed successfully
+                    statusCode: 200
+                    success: true
+  /qna/answers/q/:questionId:
+    post:
+      tags:
+        - ❓ QnA App
+      summary: Create answer for question by ID
+      description: >-
+        The API endpoint allows you to create a new answer.
+      operationId: createAnswer
+      parameters:
+        - name: questionId
+          in: path
+          required: true
+          schema:
+            type: string
+            example: 1163df24-d3ba-4f73-873d-01350c3ef69a
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                content:
+                  type: string
+                  example: Some description about answer
+      responses:
+        '201':
+          description: Create answer
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      _id:
+                        type: string
+                        example: 1163df24-d3ba-4f73-873d-01350c3ef69a
+                      answer:
+                        type: string
+                        example: Some description about answer
+                      createdAt:
+                        type: string
+                        example: 2023-06-17T19:18:34.462Z
+                  message:
+                    type: string
+                    example: Answer created successfully
+                  statusCode:
+                    type: number
+                    example: 201
+                  success:
+                    type: boolean
+                    example: true
+              examples:
+                Create answer:
+                  value:
+                    data:
+                      _id: 1163df24-d3ba-4f73-873d-01350c3ef69a
+                      answer: Some description about answer
+                      createdAt: '2023-06-17T19:18:34.462Z'
+                    message: Answer created successfully
+                    statusCode: 201
+                    success: true
+    get:
+      tags:
+        - ❓ QnA App
+      summary: Get all answers by question ID
+      description: >-
+        The API endpoint allows you to retrieve all the added answers by question ID.
+
+        When accessing this endpoint, you will receive a response containing a
+        list of all the answers that have been added by question ID.
+      operationId: getAllAnswersByQuestionId
+      parameters:
+        - name: questionId
+          in: path
+          required: true
+          schema:
+            type: string
+            example: 1163df24-d3ba-4f73-873d-01350c3ef69a
+        - name: q
+          in: query
+          schema:
+            type: string
+        - name: page
+          in: query
+          schema:
+            type: number
+            example: 1
+        - name: limit
+          in: query
+          schema:
+            type: number
+            example: 10
+      responses:
+        '200':
+          description: Get all answers by question ID
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      list:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            _id:
+                              type: string
+                              example: 1163df24-d3ba-4f73-873d
+                            answer:
+                              type: string
+                              example: Some description about answer
+                            createdByUser:
+                              type: object
+                              properties:
+                                _id:
+                                  type: number
+                                  example: ffcdd7b5-ff95-49cb-863c-0918b98afdce
+                                name:
+                                  type: string
+                                  example: John Doe
+                                email:
+                                  type: string
+                                  example: johndoe@example.com
+                            isUpvote:
+                              type: boolean
+                              example: false
+                            isDownvote:
+                              type: boolean
+                              example: false
+                            upvoteCount:
+                              type: number
+                              example: 0
+                            downvoteCount:
+                              type: number
+                              example: 0
+                            createdAt:
+                              type: string
+                              example: 2023-06-17T19:18:34.462Z
+                      meta:
+                        type: object
+                        properties:
+                          page:
+                            type: number
+                            example: 1
+                          limit:
+                            type: number
+                            example: 10
+                          total:
+                            type: number
+                            example: 1
+                          hasPrevPage:
+                            type: boolean
+                            example: false
+                          prevPage:
+                              type: number
+                              example: null
+                          hasNextPage:
+                            type: boolean
+                            example: false
+                          nextPage:
+                            type: number
+                            example: null
+                  message:
+                    type: string
+                    example: Answers fetched successfully
+                  statusCode:
+                    type: number
+                    example: 200
+                  success:
+                    type: boolean
+                    example: true
+              examples:
+                Get all answers by question ID:
+                  value:
+                    data:
+                      list:
+                        - _id: 1163df24-d3ba-4f73-873d
+                          answer: Some description about answer
+                          createdByUser:
+                            _id: ffcdd7b5-ff95-49cb-863c-0918b98afdce
+                            name: John Doe
+                            email: johndoe@example.com
+                          isUpvote: false
+                          isDownvote: false
+                          upvoteCount: 0
+                          downvoteCount: 0
+                          createdAt: '2023-06-17T19:18:34.462Z'
+                      meta:
+                        page: 1
+                        limit: 10
+                        total: 1
+                        hasPrevPage: false
+                        prevPage: null
+                        hasNextPage: false
+                        nextPage: null
+  /qna/answers/{answerId}:
+    get:
+      tags:
+        - ❓ QnA App
+      summary: Get answer by ID
+      description: >-
+        The API endpoint allows you to retrieve an answer by its ID.
+      operationId: getAnswerById
+      parameters:
+        - name: answerId
+          in: path
+          required: true
+          schema:
+            type: string
+            example: 1163df24-d3ba-4f73-873d
+      responses:
+        '200':
+          description: Get answer by ID
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      _id:
+                        type: string
+                        example: 1163df24-d3ba-4f73-873d
+                      answer:
+                        type: string
+                        example: Some description about answer
+                      createdByUser:
+                        type: object
+                        properties:
+                          _id:
+                            type: number
+                            example: ffcdd7b5-ff95-49cb-863c-0918b98afdce
+                          name:
+                            type: string
+                            example: John Doe
+                          email:
+                            type: string
+                            example: johndoe@example.com
+                      isUpvote:
+                        type: boolean
+                        example: false
+                      isDownvote:
+                        type: boolean
+                        example: false
+                      upvoteCount:
+                        type: number
+                        example: 0
+                      downvoteCount:
+                        type: number
+                        example: 0
+                      createdAt:
+                        type: string
+                        example: 2023-06-17T19:18:34.462Z
+                  message:
+                    type: string
+                    example: Answer fetched successfully
+                  statusCode:
+                    type: number
+                    example: 200
+                  success:
+                    type: boolean
+                    example: true
+              examples:
+                Get answer by ID:
+                  value:
+                    data:
+                      _id: 1163df24-d3ba-4f73-873d
+                      answer: Some description about answer
+                      createdByUser:
+                        _id: ffcdd7b5-ff95-49cb-863c-0918b98afdce
+                        name: John Doe
+                        email: johndoe@example.com
+                      isUpvote: false
+                      isDownvote: false
+                      upvoteCount: 0
+                      downvoteCount: 0
+                      createdAt: '2023-06-17T19:18:34.462Z'
+                    message: Answer fetched successfully
+                    statusCode: 200
+                    success: true
+    put:
+      tags:
+        - ❓ QnA App
+      summary: Update answer by ID
+      description: >-
+        The API endpoint allows you to update an answer by its ID.
+      operationId: updateAnswerById
+      parameters:
+        - name: answerId
+          in: path
+          required: true
+          schema:
+            type: string
+            example: 1163df24-d3ba-4f73-873d
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                answer:
+                  type: string
+                  example: Some description about answer
+      responses:
+        '200':
+          description: Update answer by ID
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Answer updated successfully
+                  statusCode:
+                    type: number
+                    example: 200
+                  success:
+                    type: boolean
+                    example: true
+              examples:
+                Update answer by ID:
+                  value:
+                    message: Answer updated successfully
+                    statusCode: 200
+                    success: true
+    delete:
+      tags:
+        - ❓ QnA App
+      summary: Delete answer by ID
+      description: >-
+        The API endpoint allows you to delete an answer by its ID.
+      operationId: deleteAnswerById
+      parameters:
+        - name: answerId
+          in: path
+          required: true
+          schema:
+            type: string
+            example: 1163df24-d3ba-4f73-873d
+      responses:
+        '200':
+          description: Delete answer by ID
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Answer deleted successfully
+                  statusCode:
+                    type: number
+                    example: 200
+                  success:
+                    type: boolean
+                    example: true
+              examples:
+                Delete answer by ID:
+                  value:
+                    message: Answer deleted successfully
+                    statusCode: 200
+                    success: true
+  /qna/answers/toggle-upvote/{answerId}:
+    patch:
+      tags:
+        - ❓ QnA App
+      summary: Toggle upvote answer by ID
+      description: >-
+        The API endpoint allows you to toggle upvote on an answer.
+      operationId: toggleUpvoteAnswer
+      parameters:
+        - name: answerId
+          in: path
+          required: true
+          schema:
+            type: string
+            example: 1163df24-d3ba-4f73-873d
+      responses:
+        '200':
+          description: Toggle upvote
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Upvote added successfully
+                  statusCode:
+                    type: number
+                    example: 200
+                  success:
+                    type: boolean
+                    example: true
+              examples:
+                Up vote add:
+                  value:
+                    message: Upvote added successfully
+                    statusCode: 200
+                    success: true
+                Up vote remove:
+                  value:
+                    message: Upvote removed successfully
+                    statusCode: 200
+                    success: true
+  /qna/answers/toggle-downvote/{answerId}:
+    patch:
+      tags:
+        - ❓ QnA App
+      summary: Toggle downvote answer by ID
+      description: >-
+        The API endpoint allows you to toggle downvote on an answer.
+      operationId: toggleDownvoteAnswer
+      parameters:
+        - name: answerId
+          in: path
+          required: true
+          schema:
+            type: string
+            example: 1163df24-d3ba-4f73-873d
+      responses:
+        '200':
+          description: Toggle downvote
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Downvote added successfully
+                  statusCode:
+                    type: number
+                    example: 200
+                  success:
+                    type: boolean
+                    example: true
+              examples:
+                Down vote add:
+                  value:
+                    message: Downvote added successfully
+                    statusCode: 200
+                    success: true
+                Down vote remove:
+                  value:
+                    message: Downvote removed successfully
+                    statusCode: 200
+                    success: true
+  
+  /chat-app/chats/users:
+    get:
+      tags:
+        - 💬 Chat App
+      summary: Get all users
+      description: >-
+        The API endpoint allows you to retrieve all the users.
+      operationId: getAllUsers
+      responses:
+        '200':
+          description: Get all users
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      list:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            _id:
+                              type: string
+                              example: 1163df24-d3ba-4f73-873d
+                            name:
+                              type: string
+                              example: John Doe
+                            email:
+                              type: string
+                              example: johndoe@example.com
+                            role:
+                              type: string
+                              example: USER
+                            isEmailVerified:
+                              type: boolean
+                              example: true
+                            createdAt: 
+                              type: string
+                              example: 2023-06-17T19:18:34.462Z
+                      meta:
+                        type: object
+                        properties:
+                          page:
+                            type: number
+                            example: 1
+                          limit:
+                            type: number
+                            example: 10
+                          total:
+                            type: number
+                            example: 1
+                          hasPrevPage:
+                            type: boolean
+                            example: false
+                          prevPage:
+                              type: number
+                              example: null
+                          hasNextPage:
+                            type: boolean
+                            example: false
+                          nextPage:
+                            type: number
+                            example: null
+                  message:
+                    type: string
+                    example: Users fetched successfully
+                  statusCode:
+                    type: number
+                    example: 200
+                  success:
+                    type: boolean
+                    example: true
+              examples:
+                Get all users:
+                  value:
+                    data:
+                      list:
+                        - _id: 1163df24-d3ba-4f73-873d
+                          name: John Doe
+                          email: johndoe@example.com
+                          role: USER
+                          isEmailVerified: true
+                          createdAt: 2023-06-17T19:18:34.462Z
+                        - _id: 25ac0085-d264-45c5-ae52-a38751594eb7
+                          name: mukul
+                          email: mukul@example.com
+                          role: USER
+                          isEmailVerified: true
+                          createdAt: 2023-06-17T19:18:34.462Z
+                      meta:
+                        page: 1
+                        limit: 10
+                        total: 2
+                        hasPrevPage: false
+                        prevPage: null
+                        hasNextPage: false
+                        nextPage: null
+  /chat-app/chats/c/:receiverId:
+    get:
+      tags:
+      - 💬 Chat App
+      summary: Create or get a one-on-one chat by receiver ID
+      description: >-
+        The API endpoint allows you to create or get a one-on-one chat by receiver ID.
+      operationId: createOrGetAOneOnOneChat
+      parameters:
+      - name: receiverId
+        in: path
+        required: true
+        schema:
+          type: string
+          example: 3f5f137e-13f9-483f-8179-7e86994d5f79
+      responses:
+        '201':
+          description: Chat retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      _id:
+                        type: string
+                        example: 3f5f137e-13f9-483f-8179-7e86994d5f79
+                      name:
+                        type: string
+                        example: null
+                      createdAt:
+                        type: string
+                        example: 2024-11-26T18:47:55.124Z
+                      isGroupChat:
+                        type: boolean
+                        example: false
+                      members:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            _id:
+                              type: string
+                              example: 3f5f137e-13f9-483f-8179-7e86994d5f79
+                            name:
+                              type: string
+                              example: John Doe
+                            email:
+                              type: string
+                              example: johndoe@example.com
+                            role: 
+                              type: string
+                              example: USER
+                            joinedAt:
+                                type: string
+                                example: 2024-11-26T18:47:55.124Z
+                  lastmessage:
+                    type: object
+                    properties:
+                      _id:
+                        type: string
+                        example: 3f5f137e-13f9-483f-8179-7e86994d5f79
+                      content:
+                        type: string
+                        example: Hi, how are you?
+                      createdByUser:
+                        type: object
+                        properties:
+                          _id:
+                            type: string
+                            example: 3f5f137e-13f9-483f-8179-7e86994d5f79
+                          name:
+                            type: string
+                            example: John Doe
+                          email:
+                            type: string
+                            example: johndoe@example.com
+                      createdAt:
+                        type: string
+                        example: 2024-11-26T18:47:55.124Z
+                  createdbyuser: 
+                    type: object
+                    properties:
+                      _id:
+                        type: string
+                        example: 3f5f137e-13f9-483f-8179-7e86994d5f79
+                      name:
+                        type: string
+                        example: John Doe
+                      email:
+                        type: string
+                        example: johndoe@example.com
+                  message:
+                    type: string
+                    example: Chat retrieved successfully
+                  statusCode:
+                    type: integer
+                    example: 201
+                  success:
+                    type: boolean
+                    example: true
+              examples:
+                Chat retrieved successfully:
+                  value:
+                    data:
+                      _id: 3f5f137e-13f9-483f-8179-7e86994d5f79
+                      name: null
+                      createdAt: 2024-11-26T18:47:55.124Z
+                      isGroupChat: false
+                      members:
+                        - _id: 3f5f137e-13f9-483f-8179-7e86994d5f79
+                          name: John Doe
+                          email: johndoe@example.com
+                          role: USER
+                          joinedAt: 2024-11-26T18:47:55.124Z
+                        - _id: 25ac0085-d264-45c5-ae52-a38751594eb7
+                          name: mukul
+                          email: mukul@example.com
+                          role: USER
+                          joinedAt: 2024-11-26T18:47:55.124Z
+                      lastmessage:
+                        _id: 3f5f137e-13f9-483f-8179-7e86994d5f79
+                        content: Hi, how are you?
+                        createdByUser:
+                          _id: 3f5f137e-13f9-483f-8179-7e86994d5f79
+                          name: John Doe
+                          email: johndoe@example.com
+                        createdAt: 2024-11-26T18:47:55.124Z
+                    createdbyuser:
+                      _id: 3f5f137e-13f9-483f-8179-7e86994d5f79
+                      name: John Doe
+                      email: johndoe@example.com
+                    message: Chat retrieved successfully
+                    statusCode: 201
+                    success: true
+  /chat-app/chats/group:
+    get:
+      tags:
+        - 💬 Chat App
+      summary: Get all group chats
+      description: >-
+        The API endpoint allows you to retrieve all the group chats.
+      operationId: getAllGroupChats
+      responses:
+        '200':
+          description: Get all group chats
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      list:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            _id:
+                              type: string
+                              example: 1163df24-d3ba-4f73-873d
+                            name:
+                              type: string
+                              example: Group chat
+                            createdAt:
+                              type: string
+                              example: 2023-06-17T19:18:34.462Z
+                            isGroupChat:
+                              type: boolean
+                              example: true
+                            members:
+                              type: array
+                              items:
+                                type: object
+                                properties:
+                                  _id:
+                                    type: string
+                                    example: 3f5f137e-13f9-483f-8179-7e86994d5f79
+                                  name:
+                                    type: string
+                                    example: John Doe
+                                  email:
+                                    type: string
+                                    example: johndoe@example.com
+                                  role:
+                                    type: string
+                                    example: ADMIN
+                                  joinedAt:
+                                    type: string
+                                    example: 2023-06-17T19:18:34.462Z
+                      meta:
+                        type: object
+                        properties:
+                          page:
+                            type: number
+                            example: 1
+                          limit:
+                            type: number
+                            example: 10
+                          total:
+                            type: number
+                            example: 1
+                          hasPrevPage:
+                            type: boolean
+                            example: false
+                          prevPage:
+                              type: number
+                              example: null
+                          hasNextPage:
+                            type: boolean
+                            example: false
+                          nextPage:
+                            type: number
+                            example: null
+                  message:
+                    type: string
+                    example: Group chats fetched successfully
+                  statusCode:
+                    type: number
+                    example: 200
+                  success:
+                    type: boolean
+                    example: true
+              examples:
+                Get all group chats:
+                  value:
+                    data:
+                      list:
+                        - _id: 1163df24-d3ba-4f73-873d
+                          name: Group chat
+                          createdAt: 2023-06-17T19:18:34.462Z
+                          isGroupChat: true
+                          members:
+                            - _id: 3f5f137e-13f9-483f-8179-7e86994d5f79
+                              name: John Doe
+                              email: johndoe@example.com
+                              role: ADMIN
+                              joinedAt: 2023-06-17T19:18:34.462Z
+                            - _id: 25ac0085-d264-45c5-ae52-a38751594eb7
+                              name: mukul
+                              email: mukul@example.com
+                              role: USER
+                              joinedAt: 2023-06-17T19:18:34.462Z
+                      meta:
+                        page: 1
+                        limit: 10
+                        total: 1
+                        hasPrevPage: false
+                        prevPage: null
+                        hasNextPage: false
+                        nextPage: null
+    post:
+      tags:
+        - 💬 Chat App
+      summary: Create a group chat
+      description: >-
+        The API endpoint allows you to create a group chat.
+      operationId: createGroupChat
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: Group chat
+                members:
+                  type: array
+                  items:
+                    type: string
+                    example: 25ac0085-d264-45c5-ae52-a38751594eb7
+      responses:
+        '201':
+          description: Create group chat
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      _id:
+                        type: string
+                        example: 3f5f137e-13f9-483f-8179-7e86994d5f79
+                      name:
+                        type: string
+                        example: Group chat
+                      createdAt:
+                        type: string
+                        example: 2024-11-26T18:47:55.124Z
+                      isGroupChat:
+                        type: boolean
+                        example: true
+                      members:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            _id:
+                              type: string
+                              example: 3f5f137e-13f9-483f-8179-7e86994d5f79
+                            name:
+                              type: string
+                              example: John Doe
+                            email:
+                              type: string
+                              example: johndoe@example.com
+                            role:
+                              type: string
+                              example: ADMIN
+                            joinedAt:
+                                type: string
+                                example: 2024-11-26T18:47:55.124Z
+                  message:
+                    type: string
+                    example: Group chat created successfully
+                  statusCode:
+                    type: integer
+                    example: 201
+                  success:
+                    type: boolean
+                    example: true
+              examples:
+                Create group chat:
+                  value:
+                    data:
+                      _id: 3f5f137e-13f9-483f-8179-7e86994d5f79
+                      name: Group chat
+                      createdAt: 2024-11-26T18:47:55.124Z
+                      isGroupChat: true
+                      members:
+                        - _id: 3f5f137e-13f9-483f-8179-7e86994d5f79
+                          name: John Doe
+                          email: johndoe@example.com
+                          role: ADMIN
+                          joinedAt: 2024-11-26T18:47:55.124Z
+                        - _id: 25ac0085-d264-45c5-ae52-a38751594eb7
+                          name: mukul
+                          email: mukul@example.com
+                          role: USER
+                          joinedAt: 2024-11-26T18:47:55.124Z
+                    message: Group chat created successfully
+                    statusCode: 201
+                    success: true
+  /chat-app/chats/group/:chatId:
+    get:
+      tags:
+        - 💬 Chat App
+      summary: Get group details by chat ID
+      description: >-
+        The API endpoint allows you to retrieve group details by chat ID.
+      operationId: getGroupChatById
+      parameters:
+        - name: chatId
+          in: path
+          required: true
+          schema:
+            type: string
+            example: 3f5f137e-13f9-483f-8179-7e86994d5f79
+      responses:
+        '200':
+          description: Get group details by chat ID
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      _id:
+                        type: string
+                        example: 3f5f137e-13f9-483f-8179-7e86994d5f79
+                      name:
+                        type: string
+                        example: Group chat
+                      createdAt:
+                        type: string
+                        example: 2024-11-26T18:47:55.124Z
+                      isGroupChat:
+                        type: boolean
+                        example: true
+                      members:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            _id:
+                              type: string
+                              example: 3f5f137e-13f9-483f-8179-7e86994d5f79
+                            name:
+                              type: string
+                              example: John Doe
+                            email:
+                              type: string
+                              example: johndoe@example.com
+                            role:
+                              type: string
+                              example: ADMIN
+                            joinedAt:
+                                type: string
+                                example: 2024-11-26T18:47:55.124Z
+                      lastmessage:
+                        type: object
+                        properties:
+                          _id:
+                            type: string
+                            example: 3f5f137e-13f9-483f-8179-7e86994d5f79
+                          content:
+                            type: string
+                            example: Hi, how are you?
+                          createdByUser:
+                            type: object
+                            properties:
+                              _id:
+                                type: string
+                                example: 3f5f137e-13f9-483f-8179-7e86994d5f79
+                              name:
+                                type: string
+                                example: John Doe
+                              email:
+                                type: string
+                                example: johndoe@example.com
+                          createdAt:
+                            type: string
+                            example: 2024-11-26T18:47:55.124Z
+                      createdbyuser:
+                        type: object
+                        properties:
+                          _id:
+                            type: string
+                            example: 3f5f137e-13f9-483f-8179-7e86994d5f79
+                          name:
+                            type: string
+                            example: John Doe
+                          email:
+                            type: string
+                            example: johndoe@example.com
+                  message:
+                    type: string
+                    example: Group chat fetched successfully
+                  statusCode:
+                    type: number
+                    example: 200
+                  success:
+                    type: boolean
+                    example: true
+              examples:
+                Get group details by chat ID:
+                  value:
+                    data:
+                      _id: 3f5f137e-13f9-483f-8179-7e86994d5f79
+                      name: Group chat
+                      createdAt: 2024-11-26T18:47:55.124Z
+                      isGroupChat: true
+                      members:
+                        - _id: 3f5f137e-13f9-483f-8179-7e86994d5f79
+                          name: John Doe
+                          email: johndoe@example.com
+                          role: ADMIN
+                          joinedAt: 2024-11-26T18:47:55.124Z
+                        - _id: 25ac0085-d264-45c5-ae52-a38751594eb7
+                          name: mukul
+                          email: mukul@example.com
+                          role: USER
+                          joinedAt: 2024-11-26T18:47:55.124Z
+                      lastmessage:
+                        _id: 3f5f137e-13f9-483f-8179-7e86994d5f79
+                        content: Hi, how are you?
+                        createdByUser:
+                          _id: 3f5f137e-13f9-483f-8179-7e86994d5f79
+                          name: John Doe
+                          email: johndoe@example.com
+                        createdAt: 2024-11-26T18:47:55.124Z
+                      createdbyuser:
+                        _id: 3f5f137e-13f9-483f-8179-7e86994d5f79
+                        name: John Doe
+                        email: johndoe@example.com
+                    message: Group chat fetched successfully
+                    statusCode: 200
+                    success: true
+    put:
+      tags:
+        - 💬 Chat App
+      summary: Update group details by chat ID
+      description: >-
+        The API endpoint allows you to update a group details by its ID.
+      operationId: updateGroupChatById
+      parameters:
+        - name: chatId
+          in: path
+          required: true
+          schema:
+            type: string
+            example: 3f5f137e-13f9-483f-8179-7e86994d5f79
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: Group chat
+      responses:
+        '200':
+          description: Update group details by chat ID
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Chat group updated successfully
+                  statusCode:
+                    type: number
+                    example: 200
+                  success:
+                    type: boolean
+                    example: true
+              examples:
+                Update group details by chat ID:
+                  value:
+                    message: Chat group updated successfully
+                    statusCode: 200
+                    success: true
+    delete:
+      tags:
+        - 💬 Chat App
+      summary: Delete group chat by chat ID
+      description: >-
+        The API endpoint allows you to delete a group chat by its ID.
+      operationId: deleteGroupChatById
+      parameters:
+        - name: chatId
+          in: path
+          required: true
+          schema:
+            type: string
+            example: 3f5f137e-13f9-483f-8179-7e86994d5f79
+      responses:
+        '200':
+          description: Delete group chat by chat ID
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Group chat deleted successfully
+                  statusCode:
+                    type: number
+                    example: 200
+                  success:
+                    type: boolean
+                    example: true
+              examples:
+                Delete group chat by chat ID:
+                  value:
+                    message: Group chat deleted successfully
+                    statusCode: 200
+                    success: true
+  /chat-app/chats/group/:chatId/:memberId:
+    post:
+      tags:
+        - 💬 Chat App
+      summary: Add member to group chat by chat ID
+      description: >-
+        The API endpoint allows you to add a member to a group chat by chat ID.
+      operationId: addMemberToGroupChat
+      parameters:
+        - name: chatId
+          in: path
+          required: true
+          schema:
+            type: string
+            example: 3f5f137e-13f9-483f-8179-7e86994d5f79
+        - name: memberId
+          in: path
+          required: true
+          schema:
+            type: string
+            example: 25ac0085-d264-45c5-ae52-a38751594eb7
+      responses:
+        '201':
+          description: Add member to group chat by chat ID
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Member added to group chat successfully
+                  statusCode:
+                    type: number
+                    example: 201
+                  success:
+                    type: boolean
+                    example: true
+              examples:
+                Add member to group chat by chat ID:
+                  value:
+                    message: Member added successfully
+                    statusCode: 201
+                    success: true
+    patch:
+      tags:
+        - 💬 Chat App
+      summary: Update member role in group chat by chat ID
+      description: >-
+        The API endpoint allows you to update a member role in a group chat by chat ID.
+      operationId: updateMemberRoleInGroupChat
+      parameters:
+        - name: chatId
+          in: path
+          required: true
+          schema:
+            type: string
+            example: 3f5f137e-13f9-483f-8179-7e86994d5f79
+        - name: memberId
+          in: path
+          required: true
+          schema:
+            type: string
+            example: 25ac0085-d264-45c5-ae52-a38751594eb7
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                role:
+                  type: string
+                  example: ADMIN
+      responses:
+        '200':
+          description: Update member role in group chat by chat ID
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Member role updated successfully
+                  statusCode:
+                    type: number
+                    example: 200
+                  success:
+                    type: boolean
+                    example: true
+              examples:
+                Update member role in group chat by chat ID:
+                  value:
+                    message: Member role updated successfully
+                    statusCode: 200
+                    success: true
+    delete:
+      tags:
+        - 💬 Chat App
+      summary: Remove member from group chat by chat ID
+      description: >-
+        The API endpoint allows you to remove a member from a group chat by chat ID.
+      operationId: removeMemberFromGroupChat
+      parameters:
+        - name: chatId
+          in: path
+          required: true
+          schema:
+            type: string
+            example: 3f5f137e-13f9-483f-8179-7e86994d5f79
+        - name: memberId
+          in: path
+          required: true
+          schema:
+            type: string
+            example: 25ac0085-d264-45c5-ae52-a38751594eb7
+      responses:
+        '200':
+          description: Remove member from group chat by chat ID
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Member removed successfully
+                  statusCode:
+                    type: number
+                    example: 200
+                  success:
+                    type: boolean
+                    example: true
+              examples:
+                Remove member from group chat by chat ID:
+                  value:
+                    message: Member removed successfully
+                    statusCode: 200
+                    success: true
+  /chat-app/chats/leave/group/:chatId:
+    delete:
+      tags:
+        - 💬 Chat App
+      summary: Leave group chat by chat ID
+      description: >-
+        The API endpoint allows you to leave a group chat by chat ID.
+      operationId: leaveGroupChat
+      parameters:
+        - name: chatId
+          in: path
+          required: true
+          schema:
+            type: string
+            example: 3f5f137e-13f9-483f-8179-7e86994d5f79
+      responses:
+        '200':
+          description: Leave group chat by chat ID
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: You have left the chat group
+                  statusCode:
+                    type: number
+                    example: 200
+                  success:
+                    type: boolean
+                    example: true
+              examples:
+                Leave group chat by chat ID:
+                  value:
+                    message: You have left the chat group
+                    statusCode: 200
+                    success: true
+  /chat-app/messages/:chatId:
+    get:
+      tags:
+        - 💬 Chat App
+      summary: Get all messages by chat ID
+      description: >-
+        The API endpoint allows you to retrieve all the messages by chat ID.
+      operationId: getAllMessagesByChatId
+      parameters:
+        - name: chatId
+          in: path
+          required: true
+          schema:
+            type: string
+            example: 3f5f137e-13f9-483f-8179-7e86994d5f79
+        - name: q
+          in: query
+          schema:
+            type: string
+        - name: page
+          in: query
+          schema:
+            type: number
+            example: 1
+        - name: limit
+          in: query
+          schema:
+            type: number
+            example: 10
+      responses:
+        '200':
+          description: Get all messages by chat ID
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      list:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            _id:
+                              type: string
+                              example: 1163df24-d3ba-4f73-873d
+                            content:
+                              type: string
+                              example: Hi, how are you?
+                            createdByUser:
+                              type: object
+                              properties:
+                                _id:
+                                  type: number
+                                  example: ffcdd7b5-ff95-49cb-863c-0918b98afdce
+                                name:
+                                  type: string
+                                  example: John Doe
+                                email:
+                                  type: string
+                                  example: johndoe@example.com
+                            createdAt:
+                              type: string
+                              example: 2023-06-17T19:18:34.462Z
+                      meta:
+                        type: object
+                        properties:
+                          page:
+                            type: number
+                            example: 1
+                          limit:
+                            type: number
+                            example: 10
+                          total:
+                            type: number
+                            example: 1
+                          hasPrevPage:
+                            type: boolean
+                            example: false
+                          prevPage:
+                              type: number
+                              example: null
+                          hasNextPage:
+                            type: boolean
+                            example: false
+                          nextPage:
+                            type: number
+                            example: null
+                  message:
+                    type: string
+                    example: Messages fetched successfully
+                  statusCode:
+                    type: number
+                    example: 200
+                  success:
+                    type: boolean
+                    example: true
+    post:
+      tags:
+        - 💬 Chat App
+      summary: Send message to chat by chat ID
+      description: >-
+        The API endpoint allows you to send a message to a chat by chat ID.
+      operationId: sendMessageToChat
+      parameters:
+        - name: chatId
+          in: path
+          required: true
+          schema:
+            type: string
+            example: 3f5f137e-13f9-483f-8179-7e86994d5f79
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                content:
+                  type: string
+                  example: Hi, how are you?
+      responses:
+        '201':
+          description: Send message to chat
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      _id:
+                        type: string
+                        example: 3f5f137e-13f9-483f-8179-7e86994d5f79
+                      content:
+                        type: string
+                        example: Hi, how are you?
+                      createdByUser:
+                        type: object
+                        properties:
+                          _id:
+                            type: string
+                            example: 3f5f137e-13f9-483f-8179-7e86994d5f79
+                          name:
+                            type: string
+                            example: John Doe
+                          email:
+                            type: string
+                            example: johndoe@example.com
+                      createdAt:
+                        type: string
+                        example: 2024-11-26T18:47:55.124Z
+                  message:
+                    type: string
+                    example: Message sent successfully
+                  statusCode:
+                    type: integer
+                    example: 201
+                  success:
+                    type: boolean
+                    example: true
+              examples:
+                Send message to chat:
+                  value:
+                    data:
+                      _id: 3f5f137e-13f9-483f-8179-7e86994d5f79
+                      content: Hi, how are you?
+                      createdByUser:
+                        _id: 3f5f137e-13f9-483f-8179-7e86994d5f79
+                        name: John Doe
+                        email: johndoe@example.com
+                      createdAt: 2024-11-26T18:47:55.124Z
+                    message: Message sent successfully
+                    statusCode: 201
+                    success: true
+  /chat-app/messages/:chatId/:messageId:
+    patch:
+      tags:
+        - 💬 Chat App
+      summary: Update message by message ID
+      description: >-
+        The API endpoint allows you to update a message by its ID.
+      operationId: updateMessageById
+      parameters:
+        - name: chatId
+          in: path
+          required: true
+          schema:
+            type: string
+            example: 3f5f137e-13f9-483f-8179-7e86994d5f79
+        - name: messageId
+          in: path
+          required: true
+          schema:
+            type: string
+            example: 1163df24-d3ba-4f73-873d
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                content:
+                  type: string
+                  example: Hi, how are you?
+      responses:
+        '200':
+          description: Update message by message ID
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      _id:
+                        type: string
+                        example: 1163df24-d3ba-4f73-873d
+                      content:
+                        type: string
+                        example: Hi, how are you?
+                      createdByUser:
+                        type: object
+                        properties:
+                          _id:
+                            type: string
+                            example: 3f5f137e-13f9-483f-8179-7e86994d5f79
+                          name:
+                            type: string
+                            example: John Doe
+                          email:
+                            type: string
+                            example: johndoe@example.com
+                      createdAt:
+                        type: string
+                        example: 2023-06-17T19:18:34.462Z
+                  message:
+                    type: string
+                    example: Message updated successfully
+                  statusCode:
+                    type: integer
+                    example: 200
+                  success:
+                    type: boolean
+                    example: true
+              examples:
+                Update message by message ID:
+                  value:
+                    data:
+                      _id: 1163df24-d3ba-4f73-873d
+                      content: Hi, how are you?
+                      createdByUser:
+                        _id: 3f5f137e-13f9-483f-8179-7e86994d5f79
+                        name: John Doe
+                        email: johndoe@example.com
+                      createdAt: 2023-06-17T19:18:34.462Z
+                    message: Message updated successfully
+                    statusCode: 200
+                    success: true
+    delete:
+      tags:
+        - 💬 Chat App
+      summary: Delete message by message ID
+      description: >-
+        The API endpoint allows you to delete a message by its ID.
+      operationId: deleteMessageById
+      parameters:
+        - name: chatId
+          in: path
+          required: true
+          schema:
+            type: string
+            example: 3f5f137e-13f9-483f-8179-7e86994d5f79
+        - name: messageId
+          in: path
+          required: true
+          schema:
+            type: string
+            example: 1163df24-d3ba-4f73-873d
+      responses:
+        '200':
+          description: Delete message by message ID
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Message deleted successfully
+                  statusCode:
+                    type: integer
+                    example: 200
+                  success:
+                    type: boolean
+                    example: true
+              examples:
+                Delete message by message ID:
+                  value:
+                    message: Message deleted successfully
+                    statusCode: 200
+                    success: true
+
+  /health-check:
+    get:
+      summary: Health check
+      responses:
+        '200':
+          description: Health check passed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: Health check passed
+                  success:
+                    type: boolean
+                    example: true
+
+tags:
+  - name: 🔐 Authentication
+    description: >-
+      This section encompasses all the APIs related to user authentication.
+  - name: 📝 Todo list
+    description: >-
+      This section comprises all the APIs necessary for building a todo list application.
+  - name: ❓ QnA App
+    description: >-
+      This section includes all the APIs required for building a QnA application.
+  - name: 💬 Chat App
+    description: >-
+      This section includes all the APIs required for building a chat application.
