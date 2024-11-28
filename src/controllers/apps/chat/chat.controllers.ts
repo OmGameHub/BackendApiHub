@@ -282,9 +282,7 @@ export const updateGroupChatDetails = asyncHandler(async (req, res) => {
 
   return res
     .status(200)
-    .json(
-      new ApiResponse(200, "Chat group updated successfully", updatedChatGroup)
-    );
+    .json(new ApiResponse(200, "Chat group updated successfully"));
 });
 
 export const changeMemberRoleInGroupChat = asyncHandler(async (req, res) => {
