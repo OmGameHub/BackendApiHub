@@ -1,8 +1,7 @@
-import { PrismaClient, Todos, Prisma } from "@prisma/client";
+import { Todos, Prisma } from "@prisma/client";
 import ApiResponse from "@/utils/ApiResponse";
 import { asyncHandler } from "@/utils/asyncHandler";
-
-const prisma = new PrismaClient();
+import dbClient from "@/prisma/dbClient";
 
 /**
  * @desc     Get all todos for the logged-in user.
@@ -50,7 +49,7 @@ export const getAllTodos = asyncHandler(async (req, res) => {
   }
 
   // Fetch todos from the database using Prisma client
-  const todos = await prisma.todos.findMany({
+  const todos = await dbClient.todos.findMany({
     where: {
       ...query,
       createdByUserId: loggedInUser.id, // Filter by logged-in user's ID
@@ -67,7 +66,7 @@ export const getTodoById = asyncHandler(async (req, res) => {
   const loggedInUser = req.user;
   const { todoId } = req.params;
 
-  const todo = await prisma.todos.findFirst({
+  const todo = await dbClient.todos.findFirst({
     where: {
       id: parseInt(todoId),
       createdByUserId: loggedInUser.id,
@@ -87,7 +86,7 @@ export const createTodo = asyncHandler(async (req, res) => {
   const loggedInUser = req.user;
   const { title, description, status } = req.body as Todos;
 
-  const todo = await prisma.todos.create({
+  const todo = await dbClient.todos.create({
     data: {
       title,
       description,
@@ -106,7 +105,7 @@ export const updateTodo = asyncHandler(async (req, res) => {
   const { todoId } = req.params;
   const { title, description, status, completed } = req.body as Todos;
 
-  const todo = await prisma.todos.findFirst({
+  const todo = await dbClient.todos.findFirst({
     where: {
       id: parseInt(todoId),
       createdByUserId: loggedInUser.id,
@@ -117,7 +116,7 @@ export const updateTodo = asyncHandler(async (req, res) => {
     return res.status(404).json(new ApiResponse(404, "Todo does not exist"));
   }
 
-  const updatedTodo = await prisma.todos.update({
+  const updatedTodo = await dbClient.todos.update({
     where: {
       id: todo.id,
     },
@@ -138,7 +137,7 @@ export const deleteTodo = asyncHandler(async (req, res) => {
   const loggedInUser = req.user;
   const { todoId } = req.params;
 
-  const todo = await prisma.todos.findFirst({
+  const todo = await dbClient.todos.findFirst({
     where: {
       id: parseInt(todoId),
       createdByUserId: loggedInUser.id,
@@ -149,7 +148,7 @@ export const deleteTodo = asyncHandler(async (req, res) => {
     return res.status(404).json(new ApiResponse(404, "Todo does not exist"));
   }
 
-  const deletedTodo = await prisma.todos.delete({ where: { id: todo.id } });
+  const deletedTodo = await dbClient.todos.delete({ where: { id: todo.id } });
 
   return res
     .status(200)
