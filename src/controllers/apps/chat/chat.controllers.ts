@@ -173,10 +173,6 @@ export const getAllChatChannels = asyncHandler(async (req, res) => {
   let { page = 1, limit = 10, isGroupChat } = apiQueryBuilder(req.query);
   const skip = (page - 1) * limit;
 
-  if (isGroupChat) {
-    isGroupChat = isGroupChat === "true";
-  }
-
   const query: Prisma.ChatChannelsWhereInput = {
     members: {
       some: {
@@ -185,8 +181,8 @@ export const getAllChatChannels = asyncHandler(async (req, res) => {
     },
   };
 
-  if (isGroupChat === "true") {
-    query.isGroupChat = true;
+  if (isGroupChat) {
+    query.isGroupChat = isGroupChat === "true";
   }
 
   const metaData = await getPaginationMetaData(dbClient.chatChannels, {
@@ -196,7 +192,7 @@ export const getAllChatChannels = asyncHandler(async (req, res) => {
   });
 
   const whereQuery =
-    typeof isGroupChat === "boolean"
+    typeof query.isGroupChat === "boolean"
       ? `chat."isGroupChat" = ${isGroupChat}`
       : `1 = 1`;
   const chatChannels = await selectAllDBQChatChannels(
