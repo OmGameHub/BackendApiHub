@@ -1,9 +1,15 @@
+import { Prisma } from "@prisma/client";
 import { asyncHandler } from "@/utils/asyncHandler";
 import dbClient from "@/prisma/dbClient";
 import ApiResponse from "@/utils/ApiResponse";
 import ApiError from "@/utils/ApiError";
 import { apiQueryBuilder, getPaginationMetaData } from "@/utils/helpers";
 import { createdByUserSelect, UserRolesEnum } from "@/utils/constants";
+
+const messageInclude: Prisma.ChatMessagesInclude = {
+  chatChannel: { select: { uuid: true } },
+  createdByUser: createdByUserSelect,
+};
 
 const getOneChatChannelsById = async (chatId: string, userId: number) => {
   const selectedChat = await dbClient.chatChannels.findUnique({
@@ -40,9 +46,7 @@ export const getAllMessages = asyncHandler(async (req, res) => {
     where: {
       chatChannelId: selectedChat.id,
     },
-    include: {
-      createdByUser: createdByUserSelect,
-    },
+    include: messageInclude,
     skip: (page - 1) * limit,
     take: limit,
     orderBy: {
@@ -74,9 +78,7 @@ export const sendMessage = asyncHandler(async (req, res) => {
       chatChannelId: selectedChat.id,
       createdByUserId: loggedInUser.id,
     },
-    include: {
-      createdByUser: createdByUserSelect,
-    },
+    include: messageInclude,
   });
 
   return res
@@ -122,9 +124,7 @@ export const updateOneMessage = asyncHandler(async (req, res) => {
     data: {
       content,
     },
-    include: {
-      createdByUser: createdByUserSelect,
-    },
+    include: messageInclude,
   });
 
   return res
@@ -163,17 +163,27 @@ export const deleteOneMessage = asyncHandler(async (req, res) => {
     throw new ApiError(403, "You are not allowed to delete this message");
   }
 
-  await dbClient.chatMessages.delete({ where: { id: selectedMessage.id } });
+  const deletedMessage = await dbClient.chatMessages.delete({
+    where: { id: selectedMessage.id },
+    include: messageInclude,
+  });
 
   return res
     .status(200)
-    .json(new ApiResponse(200, "Message deleted successfully"));
+    .json(
+      new ApiResponse(
+        200,
+        "Message deleted successfully",
+        messageTransform(deletedMessage)
+      )
+    );
 });
 
 export const messageTransform = (message: any) => {
   return {
     _id: message.uuid,
     content: message.content,
+    chatId: message.chatChannel?.uuid,
     createdByUser: {
       _id: message.createdByUser.uuid,
       name: message.createdByUser.name,
