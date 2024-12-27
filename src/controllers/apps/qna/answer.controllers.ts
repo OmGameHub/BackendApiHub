@@ -89,15 +89,10 @@ export const addAnswer = asyncHandler(async (req, res) => {
     },
   });
 
-  const ans = {
-    _id: answer.uuid,
-    answer: answer.content,
-    createdAt: answer.createdAt,
-  };
-
+  const newAnswer = await selectAllAnswers(`ans."id" = ${answer.id}`);
   return res
     .status(201)
-    .json(new ApiResponse(201, "Answer created successfully", ans));
+    .json(new ApiResponse(201, "Answer created successfully", newAnswer));
 });
 
 export const updateAnswer = asyncHandler(async (req, res) => {
@@ -121,9 +116,13 @@ export const updateAnswer = asyncHandler(async (req, res) => {
     data: { content },
   });
 
+  const updateAnswer = await selectAllAnswers(
+    `ans."id" = ${existingAnswer.id}`
+  );
+
   return res
     .status(200)
-    .json(new ApiResponse(200, "Answer updated successfully"));
+    .json(new ApiResponse(200, "Answer updated successfully", updateAnswer));
 });
 
 export const deleteAnswer = asyncHandler(async (req, res) => {
@@ -144,9 +143,14 @@ export const deleteAnswer = asyncHandler(async (req, res) => {
 
   await dbClient.answers.delete({ where: { id: answer.id } });
 
+  const deletedAnswer = {
+    _id: answer.uuid,
+    content: answer.content,
+  };
+
   return res
     .status(200)
-    .json(new ApiResponse(200, "Answer deleted successfully"));
+    .json(new ApiResponse(200, "Answer deleted successfully", deletedAnswer));
 });
 
 export const toggleUpvoteAnswer = asyncHandler(async (req, res) => {
