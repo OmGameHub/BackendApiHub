@@ -269,16 +269,23 @@ export const updateGroupChatDetails = asyncHandler(async (req, res) => {
     throw new ApiError(403, "You are not authorized to update this chat group");
   }
 
-  const updatedChatGroup = await dbClient.chatChannels.update({
+  await dbClient.chatChannels.update({
     where: { id: chatGroup.id },
     data: {
       name,
     },
   });
 
+  const updatedChatGroup = await selectAllDBQChatChannels(
+    `chat.id = '${chatGroup.id}'`,
+    loggedInUser.id
+  );
+
   return res
     .status(200)
-    .json(new ApiResponse(200, "Chat group updated successfully"));
+    .json(
+      new ApiResponse(200, "Chat group updated successfully", updatedChatGroup)
+    );
 });
 
 export const changeMemberRoleInGroupChat = asyncHandler(async (req, res) => {
@@ -520,13 +527,16 @@ export const deleteGroupChat = asyncHandler(async (req, res) => {
     throw new ApiError(403, "You are not authorized to delete this chat group");
   }
 
-  await dbClient.chatChannels.delete({
+  const deletedGroup = await dbClient.chatChannels.delete({
     where: { id: chatGroup.id },
   });
 
-  return res
-    .status(200)
-    .json(new ApiResponse(200, "Chat group deleted successfully"));
+  return res.status(200).json(
+    new ApiResponse(200, "Chat group deleted successfully", {
+      _id: deletedGroup.uuid,
+      name: deletedGroup.name,
+    })
+  );
 });
 
 const selectAllDBQChatChannels = async (
