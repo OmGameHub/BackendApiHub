@@ -6,6 +6,7 @@ import ApiError from "@/utils/ApiError";
 
 import { apiQueryBuilder, getPaginationMetaData } from "@/utils/helpers";
 import dbClient from "@/prisma/dbClient";
+import { title } from "process";
 
 export const getAllQuestions = asyncHandler(async (req, res) => {
   let { limit = 10, page = 1, q } = apiQueryBuilder(req.query);
@@ -171,9 +172,16 @@ export const updateQuestion = asyncHandler(async (req, res) => {
     data: { title, description },
   });
 
+  const updatedQuestion = await selectAllDBQuestions(
+    `q.id = ${question.id}`,
+    loggedInUser.id
+  );
+
   return res
     .status(200)
-    .json(new ApiResponse(200, "Question updated successfully"));
+    .json(
+      new ApiResponse(200, "Question updated successfully", updatedQuestion)
+    );
 });
 
 export const deleteQuestion = asyncHandler(async (req, res) => {
@@ -194,9 +202,12 @@ export const deleteQuestion = asyncHandler(async (req, res) => {
 
   await dbClient.questions.delete({ where: { id: question.id } });
 
-  return res
-    .status(200)
-    .json(new ApiResponse(200, "Question deleted successfully"));
+  return res.status(200).json(
+    new ApiResponse(200, "Question deleted successfully", {
+      _id: question.uuid,
+      title: question.title,
+    })
+  );
 });
 
 export const toggleUpvoteQuestion = asyncHandler(async (req, res) => {
