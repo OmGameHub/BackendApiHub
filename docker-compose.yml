@@ -8,3 +8,12 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=password
       - POSTGRES_DB=api_hub
+  backend:
+    image: backend-server
+    build: .
+    ports:
+      - 8080:8080
+    env_file:
+      - ./.env
+    depends_on:
+      - postgresdb
